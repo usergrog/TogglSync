@@ -1,0 +1,10 @@
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/res
+config.json
+*.iml
+.idea
+nb.yml
+app
+toggl-sync
