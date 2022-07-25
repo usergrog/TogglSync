@@ -6,27 +6,41 @@ import (
 	"TogglSync/utils"
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"time"
 )
 
 var config models.Config
 var httpClient *http.Client
+var help = flag.Bool("help", false, "Show help")
+var startFrom = flag.String("start", "", "Date from")
+var endTo = flag.String("stop", "", "Date to")
 
 func main() {
 	log.Println("Start toggl-sync")
+	flag.Parse()
+
+	if *help {
+		flag.Usage()
+		os.Exit(0)
+	}
+
+	// fmt.Println("start ", *startFrom)
+	// fmt.Println("stop ", *endTo)
 
 	models.InitDb()
 	config = utils.ReadConfig()
 
 	httpClient = &http.Client{}
 
-	req, _ := http.NewRequest(http.MethodGet, "https://api.track.toggl.com/api/v9/me/time_entries?start_date=2022-07-11&end_date=2022-07-17", nil)
-	req.SetBasicAuth("a524d4522cf319244dd3625e6ec03ff0", "api_token")
+	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("https://api.track.toggl.com/api/v9/me/time_entries?start_date=%s&end_date=%s", *startFrom, *endTo), nil)
+	req.SetBasicAuth(config.TogglToken, "api_token")
 	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := httpClient.Do(req)
@@ -37,6 +51,7 @@ func main() {
 	body, err := ioutil.ReadAll(resp.Body)
 	utils.CheckError(err)
 
+	// fmt.Println(string(body))
 	togglEntries := parsers.ParseJson(body)
 
 	for _, entry := range togglEntries {

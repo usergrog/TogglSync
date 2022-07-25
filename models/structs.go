@@ -4,6 +4,7 @@ type Config struct {
 	JiraToken    string
 	JiraHost     string
 	JiraUsername string
+	TogglToken   string
 }
 
 type TogglEntry struct {
