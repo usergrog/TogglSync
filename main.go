@@ -98,7 +98,7 @@ func handleNewEntry(entry models.TogglEntry) {
 }
 
 func cutTicketId(entry models.TogglEntry) string {
-	re, _ := regexp.Compile(`^TIC-\d{5}`)
+	re, _ := regexp.Compile(`^(TIC|INT)-\d{1,6}`)
 	res := re.FindAllString(entry.Description, -1)
 	if len(res) > 0 {
 		return res[0]
