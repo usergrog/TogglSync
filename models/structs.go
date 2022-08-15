@@ -17,6 +17,6 @@ type TogglEntry struct {
 }
 
 type Worklog struct {
-	Started          string `json:"started"`
-	TimeSpentSeconds int64  `json:"timeSpentSeconds"`
+	Started   string `json:"started"`
+	TimeSpent string `json:"timeSpent"`
 }

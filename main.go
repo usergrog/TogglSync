@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"regexp"
@@ -55,6 +56,7 @@ func main() {
 	togglEntries := parsers.ParseJson(body)
 
 	for _, entry := range togglEntries {
+		fmt.Println("Start at", entry.Start, "Desc: ", entry.Description, "\t\t\tDuration", entry.Duration, "\tHuman:", transformToHumanView(entry.Duration))
 		db_entry := models.GetEntry(entry.Id)
 		if (db_entry == models.TogglEntry{} && entry.Stop != "") {
 			handleNewEntry(entry)
@@ -72,8 +74,8 @@ func handleNewEntry(entry models.TogglEntry) {
 		utils.CheckError(err)
 		//postBody := fmt.Sprintf("{\"started\":\"%s\",\"timeSpentSeconds\":%d}", parsedDate.Format("2006-01-02T15:04:05.000+0000"), entry.Duration)
 		postBody := &models.Worklog{
-			Started:          parsedDate.Format("2006-01-02T15:04:05.000+0000"),
-			TimeSpentSeconds: entry.Duration,
+			Started:   parsedDate.Format("2006-01-02T15:04:05.000+0000"),
+			TimeSpent: transformToHumanView(entry.Duration),
 		}
 		buf := new(bytes.Buffer)
 		json.NewEncoder(buf).Encode(postBody)
@@ -105,4 +107,10 @@ func cutTicketId(entry models.TogglEntry) string {
 	} else {
 		return ""
 	}
+}
+
+func transformToHumanView(duration int64) string {
+	hours := math.Floor(float64(duration) / 60 / 60)
+	minutes := math.Ceil((float64(duration) - hours*60*60) / 60)
+	return fmt.Sprintf("%dh %dm", int(hours), int(minutes))
 }
