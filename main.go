@@ -86,6 +86,7 @@ func handleNewEntry(entry models.TogglEntry) {
 		req.Header.Add("Content-Type", "application/json")
 		req.Header.Add("Accept", "application/json")
 
+		// fmt.Scanln()
 		resp, err := httpClient.Do(req)
 		utils.CheckError(err)
 		log.Println("Jira: ", resp.Status)
@@ -100,7 +101,7 @@ func handleNewEntry(entry models.TogglEntry) {
 }
 
 func cutTicketId(entry models.TogglEntry) string {
-	re, _ := regexp.Compile(`^(TIC|INT)-\d{1,6}`)
+	re, _ := regexp.Compile(`^(TIC|INT|TCR|TPI|TPFA|TPC|TPFB|MSV|CUST|TCRD)-\d{1,6}`)
 	res := re.FindAllString(entry.Description, -1)
 	if len(res) > 0 {
 		return res[0]
